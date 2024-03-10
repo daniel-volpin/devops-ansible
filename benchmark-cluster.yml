@@ -29,7 +29,6 @@
       command: "docker service create --name whoami --publish published=8080,target=80 --replicas 1 containous/whoami"
       become: yes
 
-
 - hosts: localhost
   gather_facts: yes
   tasks:
@@ -41,6 +40,12 @@
       ansible.builtin.debug:
         msg: '{{ wrk_output.stdout_lines | select("search", "Req/Sec") }}'
 
+
+- hosts: master
+  tasks:
+    - name: update whoami service to 2 replicas
+      command: "docker service update --replicas 2 whoami"
+      become: yes
 
 - hosts: localhost
   gather_facts: yes
@@ -70,6 +75,7 @@
     - name: Debug wrk 4 output
       ansible.builtin.debug:
         msg: '{{ wrk_output_4.stdout_lines | select("search", "Req/Sec") }}'
+
 
 - hosts: master
   tasks:
